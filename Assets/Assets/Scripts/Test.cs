@@ -3,17 +3,18 @@ using System.Collections;
 
 public class Test : MonoBehaviour {
 
-	public RageCircle c;
+	public RageCircleMono c;
 
 	// Use this for initialization
 	void Start () {
-		c = new RageCircle ();
-		c.Radius = 15f;
-		c.Width = 3f;
-		c.RefreshMesh(true,true,true);
-		//LeanTween.value(c.gameObject,changeRadius,10f,200f,3f).setEase(LeanTweenType.easeInOutQuad).setLoopPingPong();
-		c.TweenRadius (100f,200f,3f);
-
+		
+		/*
+		c.TweenRadius(100f,200f,3f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
+		c.TweenAlpha (0.1f,0.9f,0.5f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
+		c.TweenFillColor(Color.red,1f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
+		*/
+		
+		CameraManager.TweenBackgroundColor(Color.green,Color.magenta,1f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
 	}
 	
 	// Update is called once per frame
@@ -21,8 +22,5 @@ public class Test : MonoBehaviour {
 		
 	}
 
-	void changeRadius(float val){
-		c.Radius = val;
-		c.RefreshMesh();
-	}
+	
 }
