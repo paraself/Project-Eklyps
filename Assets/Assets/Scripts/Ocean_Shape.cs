@@ -21,8 +21,11 @@ public class Ocean_Shape : MonoBehaviour {
 	Spline _spline;
 	SplineNode[] _points;
 	
-	public float cycleTime; // how many seconds does the shape rotate for a phase.
-	
+	// how fast does the shape rotate for a phase. Positive->clockwise
+	// in 0-1 space, per second
+	public float cycleSpeed; 
+	float cycleLength;
+	public float cyclePos = 0f;
 
 #region Properties
 	//internal reference of the Spline
@@ -71,7 +74,7 @@ public class Ocean_Shape : MonoBehaviour {
 	
 	void Awake (){
 		_spline = this.GetComponent<Spline>();
-		
+		cycleLength = 1f/numberOfPoints;
 	}
 	
 	void Start () {
@@ -100,6 +103,11 @@ public class Ocean_Shape : MonoBehaviour {
 			SplineRegenerator(numberOfPoints);
 		}
 		
+		if (Application.isPlaying) {
+			cyclePos += cycleSpeed * Time.deltaTime;
+			if (cyclePos>cycleLength) cyclePos = cyclePos - cycleLength;
+		}
+		
 		
 	}
 #endregion
@@ -110,6 +118,7 @@ public class Ocean_Shape : MonoBehaviour {
 		numberOfPoints = Mathf.Clamp(numberOfPoints,2,50);
 		radius_outter = Mathf.Clamp(radius_outter,radius_inner,100000f);
 		radius_inner = Mathf.Clamp(radius_inner,0f,radius_outter);
+		cycleSpeed = Mathf.Clamp(cycleSpeed,-1000f,1000f);
 
 	}
 	
@@ -126,6 +135,8 @@ public class Ocean_Shape : MonoBehaviour {
 		
 		Vector2[] pt = new Vector2 [2*n];
 		float deltaA = 360f / n ;
+		
+		cycleLength = 1f/n;
 		
 		Vector2 vi = Vector2.up * radius_inner;
 		Vector2 vo = Vector2.up * radius_outter;
@@ -162,6 +173,8 @@ public class Ocean_Shape : MonoBehaviour {
 		
 		RemoveNullNodes();
 		
+		
+		
 	}
 	
 	void RemoveNullNodes(){
@@ -181,6 +194,15 @@ public class Ocean_Shape : MonoBehaviour {
 		return r.magnitude;
 	}
 	
+	public float GetRadiusAtPositionCycle(float p){
+		p = Mathf.Clamp01(p);
+		float t = p+cyclePos;
+		if (t>1) t = t-cycleLength;
+		Vector3 po = _spline.GetPositionOnSpline(t);
+		Vector2 r = Pos2 - new Vector2 (po.x,po.y);
+		return r.magnitude;
+	}
+	
 	//point from cneter to peremeter
 	public Vector2 GetDirection(float p){
 		p = Mathf.Clamp01(p);
@@ -193,6 +215,14 @@ public class Ocean_Shape : MonoBehaviour {
 		p = Mathf.Clamp01(p);
 		Vector3 po = _spline.GetPositionOnSpline(p);
 		return new Vector2(po.x,po.y);
+	}
+	
+	//
+	public Vector2 GetPos2Cycle(float p){
+		float t = p+cyclePos;
+		if (t>1) t = t-cycleLength;
+		return GetPos2(t);
+		
 	}
 #endregion
 

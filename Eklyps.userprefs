@@ -1,6 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Assets/Scripts/Ocean_Shape.cs">
+    <Files>
+      <File FileName="Assets/Assets/Scripts/Ocean_Spring.cs" Line="21" Column="27" />
+      <File FileName="Assets/Assets/Scripts/Ocean_Shape.cs" Line="24" Column="80" />
+      <File FileName="Assets/Assets/Scripts/Ocean_Trigger.cs" Line="31" Column="47" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -73,8 +73,11 @@ public class Ocean_Spring : MonoBehaviour {
 	
 	void SpringUpdate(){
 		
-		for (int i=0;i < numberOfSprings;i++) springs[i].Update();
-		
+		float d = 1f/numberOfSprings;
+		for (int i=0;i < numberOfSprings;i++) {
+			springs[i].TargetHeight = shape.GetRadiusAtPositionCycle(i*d);
+			springs[i].Update();
+		}
 		
 		for (int j =0;j< iterations;j++) {
 			
@@ -130,7 +133,7 @@ public class Spring {
 	float tolerance;
 	//float HeightOld;
 	float _speed;
-	float _targetHeight;
+	public float _targetHeight;
 	public float HeightDif;
 	private float K;
 	private float Damping;
@@ -218,6 +221,8 @@ public class Spring {
 		Speed += f;
 	
 	}
+	
+	
 	
 }
 
