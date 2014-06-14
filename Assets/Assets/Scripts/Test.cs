@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Test : MonoBehaviour {
 
-	public RageCircleMono c;
+	public RageCircle c;
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +14,7 @@ public class Test : MonoBehaviour {
 		c.TweenFillColor(Color.red,1f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
 		*/
 		
-		CameraManager.TweenBackgroundColor(Color.green,Color.magenta,1f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
+		//CameraManager.TweenBackgroundColor(Color.green,Color.magenta,1f).setEase(LeanTweenType.easeInOutCubic).setLoopPingPong();
 	}
 	
 	// Update is called once per frame

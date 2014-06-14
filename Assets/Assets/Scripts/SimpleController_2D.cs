@@ -12,10 +12,10 @@ public class SimpleController_2D : MonoBehaviour {
 	
 	void Start(){
 		rb = this.rigidbody2D;
-		float a = Random.Range(-10000f,10000f);
-		float b = Random.Range(-10000f,10000f);
-		rb.AddForce(new Vector2 (a,b));
-		//Application.targetFrameRate = 60;
+		//float a = Random.Range(-10000f,10000f);
+		//float b = Random.Range(-10000f,10000f);
+		//rb.AddForce(new Vector2 (a,b));
+		
 	}
 	
 	void Update() {

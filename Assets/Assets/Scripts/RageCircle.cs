@@ -1,194 +1,193 @@
-﻿using UnityEngine;
+﻿//Yves Wang @Project Eklyps
+//Rage Circle Mono is a component that utilizes ragesplines functinality
+//and make it adpted to Eklyps' needs.
+//it provides the basic circle-specific features like,
+//most of its tweening features, collison detection, 
+//any features that are common among circular entities in Eklyps
+//note that it dose not handle physics stuff, it goes into 
+//another script which handles common physics event 
+
+
+using UnityEngine;
 using System.Collections;
 
-//Draw a 2d circle using RageSpline on XY plane
-//you have to manually refresh mesh in each late update
-//it's a monohehaviour already
+public class RageCircle : MonoBehaviour {
+	
+	public float minAntiAliasWidth = 0.005f;
+	public float maxAntiAliasWidth = 5f;
+	public float density = 10f;
+	
+	float AntiAliasPlaftformFactor;
+	
+	//mass = density * pi * r^2
+	float mass;
+	//Rigidbody2D rb2D;
+	
+	float antiAliasWidth; //recorde the original fineset width
+	float radius;
+	Transform thisTransform;
+	
+	IRageSpline spline;
 
-public class RageCircle : MonoBehaviour{
-
-	float radius = 1f;
-	Vector3 center = Vector3.zero;
-	float width = 1f;
-	public bool filled = true;
-	public bool outlined = false;
-	Color strokeColor = Color.white;
-	Color fillColor = Color.red;
-
-	public GameObject gameObject;
-	public IRageSpline spline;
-
-	Vector3 r,l,u,d,r2,l2,u2,d2;//radius parameters;
-
-	//if we created the ragecircle from code, it's also supportable
-	//this probably will be drprecated
-#region Constructor for creating circles from code
-	//default no-stroke, filled circle
-	public RageCircle () {
-		Init();
+#region Unity Monobehavious
+	void Awake(){
+		spline = this.GetComponent<RageSpline>() as IRageSpline;
+		thisTransform = this.transform;
+		//rb2D = this.rigidbody2D;
+		#if UNITY_EDITOR
+		AntiAliasPlaftformFactor = 1f;
+		#endif
+		#if UNITY_STANDALONE
+		AntiAliasPlaftformFactor = 1f;
+		#endif
+		#if UNITY_IPHONE
+		AntiAliasPlaftformFactor = 0.5f;
+		#endif
+		
 	}
-
-	public RageCircle (Vector3 center, float radius, Color color) {
-		this.center = center;
-		this.radius = radius;
-		this.fillColor = color;
-		Init();
+	void Start () {
+		float t = Vector3.Distance (spline.GetPositionWorldSpace (0), thisTransform.position);
+		radius = t;
+		float w = spline.GetAntialiasingWidth();
+		spline.SetAntialiasingWidth(w * AntiAliasPlaftformFactor);
+		//antiAliasFactor = radius * spline.GetAntialiasingWidth();
+		antiAliasWidth = spline.GetAntialiasingWidth();
+		mass = density * radius * radius;
 	}
-
-	public RageCircle ( Vector3 center, float radius, float width, bool outlined, bool filled, Color color1, Color color2){
-		this.center = center;
-		this.radius = radius;
-		this.outlined = outlined;
-		this.filled = filled;
-		this.fillColor = color2;
-		this.strokeColor = color1;
-		this.width = Mathf.Max(0f,width);
-		spline.SetOutlineWidth(this.width);
-		Init();
-	}
-
-	void Init(){
-		//gameObject = new GameObject("RageCircle");
-		//spline = gameObject.AddComponent<RageSpline>() as IRageSpline;
-		gameObject = UnityEngine.Object.Instantiate(Resources.Load("Circle", typeof(GameObject))) as GameObject;
-		spline = gameObject.GetComponent<RageSpline>() as IRageSpline;
-		
-		if (filled == true) {
-			spline.SetFill(RageSpline.Fill.Solid);
-			spline.SetFillColor1(fillColor);
-		} else {
-			spline.SetFill(RageSpline.Fill.None);
-		}
-		
-		if (outlined == true ){
-			spline.SetOutline(RageSpline.Outline.Loop);
-			spline.SetOutlineColor1(strokeColor);
-		} else {
-			spline.SetOutline(RageSpline.Outline.None);
-		}
-		
-		gameObject.transform.position = center;
-		//spline.AddPoint(0.25f);
-		//spline.AddPoint(0.75f);because we use the prefab, so no need to add extra points
-		
-		//Debug.Log("total points count = "+spline.GetPointCount());
-		//Debug.Log(spline.GetPositionWorldSpace(1));
-		
-		UpdateRadiusAndPoints();
-
-
-		spline.SetAntialiasingWidth(0.1f);
-		spline.SetOptimize(true);
-		spline.SetOptimizeAngle(4f);
-		
-		Debug.Log(spline.GetVertexCount());
-
-		//gameObject.renderer.material = 
-		
-		spline.RefreshMesh();
-
-		//we initiate an empty tween for furture use
-		//LeanTween.value(this.gameObject,this.radius,this.radius,0f,
-	}
-
-	internal void UpdateRadiusAndPoints () {
-		//r,l,u,d,r2,l2,u2,d2
-		r = Vector3.right * radius;
-		l = Vector3.left * radius;
-		d = Vector3.down * radius;
-		u = Vector3.up * radius;
-		r2 = r * 0.54f;
-		l2 = l * 0.54f;
-		u2 = u * 0.54f;
-		d2 = d * 0.54f;
-
-		spline.SetPoint(0,r,u2,d2,false);
-		spline.SetPoint(1,d,r2,l2,false);
-		spline.SetPoint(2,l,d2,u2,false);
-		spline.SetPoint(3,u,l2,r2,false);
-
-		//spline.SetVertexCount(Mathf.Max(10,Mathf.RoundToInt(radius * radius * 0.2f)));
+	
+	// Update is called once per frame
+	void Update () {
+	
 	}
 #endregion
 
-#region Unity Monobehaviours
-	void Start(){
-		//this.spline = this.GetComponent<RageSpline>() as IRageSpline;
-		//gameObject = this.gameObject;
-	}
-	void Update(){
-	}
-#endregion
-
-#region Methods
-
-	public void RefreshMesh(){
-		spline.RefreshMesh();
-	}
-
-	//public void RefreshMesh(bool refreshFillTriangulation, bool refreshNormals, bool refreshPhysics)
-	public void RefreshMesh(bool a,bool b,bool c) {
-		spline.RefreshMesh(a,b,c);
-		//if find circle collider 2d, refresh it
-
-	}
-
-	public void TweenRadius(float _from,float _to,float _time){
-		LeanTween.value(gameObject,changeRadius,_from,_to,_time).setEase(LeanTweenType.linear).setLoopPingPong();
-	}
-
-	//public void TweenScale(
-
-	internal void changeRadius(float x){
-		this.Radius = x;
-		this.RefreshMesh();
-	}
-#endregion
-
-	//public void RefreshMesh(bool refreshFillTriangulation, bool refreshNormals, bool refreshPhysics)
-#region Get/Set
-	//--Get/Set
+#region Properties
+	//TODO: Fix physics glithces when setting radius by altering its scale
+	//or we can manually calculate the point
 	public float Radius {
-		get {
-			return this.radius;
-		}
+		get {return radius;}
+		// 0 means nothing
 		set {
-			if (value!=this.radius) {
-				this.radius = Mathf.Max(0f,value);
-				UpdateRadiusAndPoints();
+			if (value<0f) {
+				return;
+			} else {
+				//physics and anti-w is scale accordingly
+				float s = value / radius;
+				thisTransform.localScale *= s;
+				antiAliasWidth /= s;
+				radius = value;
+				//update mass
+				mass = density * radius * radius;
+				//update anti-alias width and refresh mesh
+				if (( antiAliasWidth > minAntiAliasWidth) || ( antiAliasWidth < maxAntiAliasWidth )) {
+					spline.SetAntialiasingWidth(antiAliasWidth);
+					spline.RefreshMesh(true,false,false);
+				}
 			}
-
 		}
 	}
 
-	public Vector3 Center {
+	public bool IsTweening {
+		get {return LeanTween.isTweening(this.gameObject);}
+	}
+	
+	public float Mass {
+		get {return mass;}
+	}
+	
+	/*
+	public Rigidbody2D Rb2D {
 		get {
-			return this.center;
+			if (rb2D == null ) {
+				rb2D = this.GetComponent<Rigidbody2D>();
+				if (rb2D == null) return null; else return rb2D;
+			} else {
+				return rb2D;
+			}
 		}
-		set {
-			this.center = value;
-		}
-	}
-
-	public Color FillColor {
+	}*/
+	
+	public Transform Tf {
 		get {
-			return this.fillColor;
-		}
-		set {
-			this.fillColor = value;
-			spline.SetFillColor1(this.fillColor);
+			if (thisTransform != null) {
+				return thisTransform;
+			} else {
+				thisTransform = this.transform;
+				return thisTransform;
+			}
 		}
 	}
 
-	public Color OutlineColor {
-		get {return this.strokeColor;}
-		set {this.strokeColor = value;spline.SetOutlineColor1(this.strokeColor);}
-	}
-
-	public float Width {
-		get { return this.width;}
-		set { this.width = Mathf.Max (0f,value);spline.SetOutlineWidth(this.width);}
+	public Vector2 Pos2 {
+		get {
+			return new Vector2 (Tf.position.x,Tf.position.y);
+		}
 	}
 #endregion
+#region Tween Radius
+
+	public LTDescr TweenRadius(float r1, float r2, float t) {
+		if ((r1<0f)||(r2<0f)||(t<=0)) {
+			return null;
+		} else {
+			return LeanTween.value(this.gameObject,_tweenRadius,r1,r2,t);
+		}
+	}
+	
+	void _tweenRadius(float x){
+		this.Radius = x;
+	}
+	
+	public LTDescr TweenRadius(float r,float t){
+		return TweenRadius(this.Radius,r,t);
+	}
+	
+	
+#endregion
+
+#region Tween Fill Color
+	//alpha is ignored and put in another tween
+	public LTDescr TweenFillColor(Color c, Color c2, float t){
+		if (spline.GetFill () == RageSpline.Fill.Solid) {
+			return 
+				LeanTween.value (
+					this.gameObject, 
+					_tweenFillColor, 
+					new Vector3 (c.r, c.g,c.b), 
+					new Vector3 (c2.r, c2.g, c2.b), 
+					t);
+		} else {
+			Debug.Log(this.name+ " : Only Solid fill can be tweened");
+			return null;
+		}
+	}
+
+	void _tweenFillColor(Vector3 x){
+		spline.SetFillColor1 (new Color (x.x, x.y, x.z));
+	}
+
+	public LTDescr TweenFillColor(Color c,float t){
+		return TweenFillColor (spline.GetFillColor1 (), c, t);
+	}
+
+#endregion
+
+#region Tween Alpha
+	public LTDescr TweenAlpha(float a1, float a2, float t){
+		if (spline.GetFill () == RageSpline.Fill.Solid) {
+			_fillColor = spline.GetFillColor1();
+			return LeanTween.value (this.gameObject, _tweenAlpha, a1, a2, t);
+		} else {
+			Debug.Log(this.name+ " : Only Solid fill can be tweened");
+			return null;
+		}
+	}
+	Color _fillColor;
+	void _tweenAlpha(float x){
+		_fillColor.a = x;
+		spline.SetFillColor1(_fillColor);
+	}
+#endregion
+
 
 }

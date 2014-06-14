@@ -5,7 +5,7 @@ public class TestGUI : MonoBehaviour {
 
 	bool useBloom;
 	
-	public Transform CirclePrefab;
+	
 
 	void Start () {
 
@@ -19,7 +19,7 @@ public class TestGUI : MonoBehaviour {
 
 	bool _useBloom;
 	
-	
+	/*
 	void OnGUI () {
 		GUILayout.BeginArea(new Rect(100,100,400,400));
 		_useBloom = useBloom;
@@ -30,13 +30,13 @@ public class TestGUI : MonoBehaviour {
 
 		if (GUILayout.Button("Add Circle",GUILayout.Width(100f))){
 			//Instantiate(CirclePrefab,Vector3.zero,Quaternion.identity);
-			RageCircleMono r = WorldManager.AddGenericPlanet();
+			RageCircleMono r = WorldManager.Instance.AddGenericPlanet();
 			if (r) r.Rb2D.AddForce(new Vector2(Random.Range(-10000f,10000f),Random.Range(-10000f,10000f)));
 			else {Debug.Log("R is null");}
 		}
 		GUILayout.EndArea();
 
-	}
+	}*/
 
 
 }
