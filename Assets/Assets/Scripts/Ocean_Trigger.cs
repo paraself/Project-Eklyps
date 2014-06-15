@@ -5,6 +5,7 @@ public class Ocean_Trigger : MonoBehaviour {
 	
 	Ocean_Spring spring;
 	public Spring sp;//will be feed in with Ocean_Springs
+	bool isInTrigger = false;
 	
 	#region Unity Monos
 	void Awake(){
@@ -20,7 +21,7 @@ public class Ocean_Trigger : MonoBehaviour {
 		
 	}
 	
-	void OnTriggerEnter2D(Collider2D c){
+	void OnTriggerStay2D(Collider2D c){
 		print("Trigger");
 		/*
 		float force = 100000000f/(c.transform.position - this.transform.position).sqrMagnitude;
@@ -31,7 +32,11 @@ public class Ocean_Trigger : MonoBehaviour {
 		if (sp.isDebug) Debug.Log("Force = "+force);
 		
 		sp.ApplyForce(force);
+		c.rigidbody2D.AddForceAtPosition(-sp.Di*force*10f,sp.Pos2);
+		//sp.ApplyForceVerlet(force);
 	}
+	
+	
 	
 	#endregion
 	

@@ -76,6 +76,7 @@ public class Ocean_Spring : MonoBehaviour {
 		float d = 1f/numberOfSprings;
 		for (int i=0;i < numberOfSprings;i++) {
 			springs[i].TargetHeight = shape.GetRadiusAtPositionCycle(i*d);
+			//springs[i].UpdateVerlet();
 			springs[i].Update();
 		}
 		
@@ -180,6 +181,7 @@ public class Spring {
 		
 		TargetHeight = t;
 		Height = h;
+		HeightOld = Height;
 
 		Speed = v;
 		
@@ -209,10 +211,26 @@ public class Spring {
 	public void Update(){
 		HeightDif = Height - TargetHeight;
 		a = - K * HeightDif - Damping * Speed;
-		Height += Speed;
-		Speed += a;
+		Height += Speed * Time.deltaTime;
+		Speed += a * Time.deltaTime;
 		_t.position = center+ Di * Height;
 
+	}
+	
+	float HeightOld;
+	public void UpdateVerlet(){
+		float temp = Height;
+		
+		HeightDif = Height - TargetHeight;
+		a = - K * HeightDif - Damping * Speed;
+		
+		Height = Height + 1f * (Height - HeightOld) + a * Time.deltaTime * Time.deltaTime;
+		HeightOld = temp;
+		
+		//Height += Speed * Time.deltaTime;
+		Speed += a * Time.deltaTime;
+		_t.position = center+ Di * Height;
+		
 	}
 	
 	//apply positive force will act fr center to peremeter
@@ -220,6 +238,12 @@ public class Spring {
 		//f = Mathf.Clamp(f,-tolerance,tolerance);
 		Speed += f;
 	
+	}
+	
+	public void ApplyForceVerlet(float f){
+		//f = Mathf.Clamp(f,-tolerance,tolerance);
+		HeightOld += f;
+		
 	}
 	
 	

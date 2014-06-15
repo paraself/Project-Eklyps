@@ -106,6 +106,7 @@ public class Ocean_Shape : MonoBehaviour {
 		if (Application.isPlaying) {
 			cyclePos += cycleSpeed * Time.deltaTime;
 			if (cyclePos>cycleLength) cyclePos = cyclePos - cycleLength;
+			if (cyclePos<0f) cyclePos+=cycleLength;
 		}
 		
 		
