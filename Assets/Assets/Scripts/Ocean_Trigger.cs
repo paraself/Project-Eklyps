@@ -23,31 +23,30 @@ public class Ocean_Trigger : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		if (targets.Count >0 ) {
-			for (int i=targets.Count-2;i>=0;i--){
-				Vector3 ds = targets[i].transform.position - sp.Pos3;
-				if (ds.sqrMagnitude >= sqrRange) {
-					targets.RemoveAt(i);
-					continue;
-				}
-				float force = targets[i].velocity.sqrMagnitude/1000f;
+			for (int i=0;i<targets.Count;i++){
+				float force = targets[i].velocity.sqrMagnitude * 0.001f;
 				sp.ApplyForce(force);
-				targets[i].AddForceAtPosition(-sp.Di*force*10f,sp.Pos2);
+				targets[i].AddForce(-sp.Di*force);
+				DebugExtension.DebugPoint(sp.Pos3,Color.red,20f,0.5f,false);
+				
 			}
 		}
 	}
 	
-	void OnTriggerEnter2D(Collider2D c){
+	void OnCollisionEnter2D(Collision2D c){
 		//print("Trigger");
-		if (!targets.Contains(c.rigidbody2D)) targets.Add(c.rigidbody2D);
+		Rigidbody2D b = c.transform.rigidbody2D;
+		if (!targets.Contains(b)) targets.Add(b);
 	}
 		
 		
 	
 	
-	void OnTriggerExit2D(Collider2D c){
-		if (targets.Contains(c.rigidbody2D)) targets.Remove(c.rigidbody2D);
+	void OnCollisionExit2D(Collision2D c){
+		Rigidbody2D b = c.transform.rigidbody2D;
+		if (targets.Contains(b)) targets.Remove(b);
 	}
 	
 	

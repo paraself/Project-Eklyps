@@ -52,7 +52,7 @@ public class Ocean_Spring : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		SpringUpdate();
 	}
 	#endregion
@@ -77,7 +77,7 @@ public class Ocean_Spring : MonoBehaviour {
 		for (int i=0;i < numberOfSprings;i++) {
 			springs[i].TargetHeight = shape.GetRadiusAtPositionCycle(i*d);
 			//springs[i].UpdateVerlet();
-			springs[i].Update();
+			springs[i].FixedUpdate();
 		}
 		
 		for (int j =0;j< iterations;j++) {
@@ -194,12 +194,13 @@ public class Spring {
 		Di = di.normalized;
 		Pos2 = p;
 		g = new GameObject ("SpringTrigger", typeof(CircleCollider2D),typeof(Rigidbody2D),typeof(Ocean_Trigger));
+		g.layer = LayerMask.NameToLayer("Ocean");
 		_t = g.transform;
 		_rb = g.rigidbody2D;
 		_rb.isKinematic = true;
 		trigger = g.GetComponent<CircleCollider2D>();
 		g.GetComponent<Ocean_Trigger>().sp = this;
-		trigger.isTrigger = true;
+		trigger.isTrigger = false;
 		trigger.radius = r;
 		g.transform.parent = parent;
 		g.transform.position = Pos3;
@@ -211,14 +212,13 @@ public class Spring {
 		tolerance = TargetHeight / 5f;
 	}
 	
-	public void Update(){
+	public void FixedUpdate(){
 		HeightDif = Height - TargetHeight;
 		a = - K * HeightDif - Damping * Speed;
 		Height += Speed * Time.deltaTime;
 		Speed += a * Time.deltaTime;
-		_t.position = center+ Di * Height;
-		
-
+		//_t.position = center+ Di * Height;
+		_rb.MovePosition(center + Di * Height);
 	}
 	
 	float HeightOld;
