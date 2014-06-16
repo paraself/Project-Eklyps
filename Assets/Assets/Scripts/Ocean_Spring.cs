@@ -146,6 +146,7 @@ public class Spring {
 	
 	private GameObject g;
 	Transform _t;
+	Rigidbody2D _rb;
 	private CircleCollider2D trigger;
 	
 	public bool isDebug = false;
@@ -192,8 +193,10 @@ public class Spring {
 		rightDelta = 0f;
 		Di = di.normalized;
 		Pos2 = p;
-		g = new GameObject ("SpringTrigger", typeof(CircleCollider2D),typeof(Ocean_Trigger));
+		g = new GameObject ("SpringTrigger", typeof(CircleCollider2D),typeof(Rigidbody2D),typeof(Ocean_Trigger));
 		_t = g.transform;
+		_rb = g.rigidbody2D;
+		_rb.isKinematic = true;
 		trigger = g.GetComponent<CircleCollider2D>();
 		g.GetComponent<Ocean_Trigger>().sp = this;
 		trigger.isTrigger = true;
@@ -214,6 +217,7 @@ public class Spring {
 		Height += Speed * Time.deltaTime;
 		Speed += a * Time.deltaTime;
 		_t.position = center+ Di * Height;
+		
 
 	}
 	
